@@ -76,26 +76,17 @@ export default function HomePage() {
       {/* Hero Section */}
       <section style={{
         minHeight: '420px',
-        background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
+        background: '#13111c',
         display: 'flex', alignItems: 'center', position: 'relative', overflow: 'hidden',
         padding: '3rem 0',
       }}>
         <div style={{
           position: 'absolute', inset: 0,
-          background: 'radial-gradient(ellipse at 20% 50%, rgba(255,107,53,0.08) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(99,102,241,0.06) 0%, transparent 50%)',
+          background: 'radial-gradient(circle at 90% 50%, rgba(255, 107, 53, 0.35) 0%, transparent 65%)',
           pointerEvents: 'none',
         }} />
         <div className="container" style={{ maxWidth: '1000px', padding: '0 1.5rem', position: 'relative', zIndex: 1 }}>
           <div style={{ maxWidth: '620px' }}>
-            <div style={{
-              display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
-              background: 'rgba(255,107,53,0.12)', border: '1px solid rgba(255,107,53,0.25)',
-              color: '#fb923c', padding: '0.35rem 1rem', borderRadius: '30px',
-              fontSize: '0.8rem', fontWeight: 700, marginBottom: '1.25rem',
-              letterSpacing: '0.03em', textTransform: 'uppercase',
-            }}>
-              🚀 Free delivery on first order
-            </div>
             <h1 style={{
               color: '#fff', fontSize: 'clamp(2.2rem, 4.5vw, 3.4rem)',
               fontWeight: 900, marginBottom: '0.75rem', lineHeight: 1.12,
