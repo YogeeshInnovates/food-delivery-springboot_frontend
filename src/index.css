@@ -1034,6 +1034,24 @@ tr:hover td {
   .navbar {
     height: 70px;
   }
+  .navbar .logo {
+    font-size: 1.35rem;
+  }
+  .nav-links {
+    gap: 0.35rem;
+  }
+  .nav-link {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.82rem;
+  }
+  .nav-link svg {
+    width: 16px;
+    height: 16px;
+  }
+  .btn-sm {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.78rem;
+  }
   .dashboard-layout {
     padding-top: 70px;
   }
