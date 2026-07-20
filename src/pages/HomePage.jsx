@@ -73,6 +73,16 @@ export default function HomePage() {
 
   return (
     <div className="page" style={{ paddingTop: '76px' }}>
+      <style>{`
+        .hero-inner-wrapper {
+          padding-left: 0;
+        }
+        @media (min-width: 768px) {
+          .hero-inner-wrapper {
+            padding-left: 2.5rem;
+          }
+        }
+      `}</style>
       {/* Hero Section */}
       <section style={{
         minHeight: '460px',
@@ -88,7 +98,7 @@ export default function HomePage() {
           pointerEvents: 'none',
         }} />
         <div className="container" style={{ position: 'relative', zIndex: 1, width: '100%' }}>
-          <div style={{ maxWidth: '620px', paddingLeft: '2.5rem' }}>
+          <div className="hero-inner-wrapper" style={{ maxWidth: '620px' }}>
             {/* #1 Food Delivery Badge */}
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
