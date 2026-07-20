@@ -193,7 +193,7 @@ export default function OrderTrackingPage() {
     const tick = () => {
       const elapsed = Date.now() - startTime;
       const remaining = Math.max(0, Math.ceil((totalMs - elapsed) / 1000));
-      if (remaining > 0) setEta(`${Math.ceil(remaining / 60)}m ${remaining % 60}s`);
+      setEta(`${Math.ceil(remaining / 60)}m`);
 
       if (elapsed < PLACED_DURATION) {
         setCurrentStep(0);

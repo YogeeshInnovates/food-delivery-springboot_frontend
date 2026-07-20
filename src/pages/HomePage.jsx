@@ -75,47 +75,59 @@ export default function HomePage() {
     <div className="page" style={{ paddingTop: '76px' }}>
       {/* Hero Section */}
       <section style={{
-        minHeight: '420px',
-        background: '#13111c',
+        minHeight: '460px',
+        backgroundImage: 'url(https://res.cloudinary.com/daxdbmpbn/image/upload/v1784560319/ChatGPT_Image_Jul_20_2026_05_32_48_PM_g9zyyh.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
         display: 'flex', alignItems: 'center', position: 'relative', overflow: 'hidden',
-        padding: '3rem 0',
       }}>
         <div style={{
           position: 'absolute', inset: 0,
-          background: 'radial-gradient(circle at 90% 50%, rgba(255, 107, 53, 0.35) 0%, transparent 65%)',
+          background: 'linear-gradient(90deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 40%, transparent 65%)',
           pointerEvents: 'none',
         }} />
-        <div className="container" style={{ maxWidth: '1000px', padding: '0 1.5rem', position: 'relative', zIndex: 1 }}>
-          <div style={{ maxWidth: '620px' }}>
+        <div className="container" style={{ position: 'relative', zIndex: 1, width: '100%' }}>
+          <div style={{ maxWidth: '620px', paddingLeft: '2.5rem' }}>
+            {/* #1 Food Delivery Badge */}
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+              background: 'rgba(0, 0, 0, 0.45)', border: '1px solid rgba(255, 255, 255, 0.15)',
+              borderRadius: '20px', padding: '0.35rem 0.9rem', marginBottom: '1.25rem',
+            }}>
+              <span style={{ color: '#fb923c', fontSize: '0.72rem', fontWeight: 800 }}>#1</span>
+              <span style={{ color: '#fff', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.05em' }}>FOOD DELIVERY</span>
+            </div>
             <h1 style={{
-              color: '#fff', fontSize: 'clamp(2.2rem, 4.5vw, 3.4rem)',
-              fontWeight: 900, marginBottom: '0.75rem', lineHeight: 1.12,
-              letterSpacing: '-0.03em',
+              color: '#ffffff', fontSize: 'clamp(2.4rem, 5vw, 3.4rem)',
+              fontWeight: 800, marginBottom: '0.85rem', lineHeight: 1.12,
+              letterSpacing: '-0.02em',
             }}>
               Your favorite food,<br />
-              <span style={{
-                background: 'linear-gradient(135deg, #fb923c, #fbbf24)',
-                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-              }}>delivered fast</span>
+              <span style={{ color: '#fb923c' }}>delivered fast</span>
             </h1>
-            <p style={{ color: '#94a3b8', fontSize: '1.05rem', marginBottom: '1.75rem', lineHeight: 1.7, maxWidth: '480px' }}>
-              Order from the best local restaurants with easy tracking — hot & fresh, right at your door.
+            <p style={{
+              color: 'rgba(255, 255, 255, 0.9)', fontSize: '1.05rem', marginBottom: '2rem',
+              lineHeight: 1.65, maxWidth: '520px',
+            }}>
+              Order from the best local restaurants with easy tracking <br className="hide-on-mobile" /> hot & fresh, right at your door.
             </p>
-            {!token && (
-              <div style={{ display: 'flex', gap: '0.85rem', flexWrap: 'wrap' }}>
-                <Link to="/register" className="btn btn-primary btn-lg" style={{ borderRadius: '30px', fontSize: '0.95rem', padding: '0.7rem 1.8rem' }}>
-                  Get Started
-                </Link>
-                <Link to="/restaurants" className="btn btn-lg" style={{
-                  borderRadius: '30px', fontSize: '0.95rem', padding: '0.7rem 1.8rem',
-                  border: '1.5px solid rgba(255,255,255,0.2)', background: 'transparent', color: '#e2e8f0',
-                }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}>
-                  Explore Restaurants →
-                </Link>
-              </div>
-            )}
+            <div style={{ display: 'flex', gap: '0.85rem', flexWrap: 'wrap' }}>
+              <Link to={token ? '/restaurants' : '/register'} className="btn btn-primary btn-lg" style={{
+                borderRadius: '30px', fontSize: '0.95rem', padding: '0.7rem 1.8rem',
+              }}>
+                Get Started →
+              </Link>
+              <Link to="/restaurants" className="btn btn-lg" style={{
+                borderRadius: '30px', fontSize: '0.95rem', padding: '0.7rem 1.8rem',
+                background: 'transparent', color: '#fff',
+                border: '1.5px solid rgba(255, 255, 255, 0.4)',
+              }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}>
+                Explore Restaurants →
+              </Link>
+            </div>
           </div>
         </div>
       </section>

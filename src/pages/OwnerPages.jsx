@@ -764,7 +764,7 @@ export function CompleteRegistrationPage() {
                 </div>
                 <div className="form-group">
                   <label className="form-label">Category *</label>
-                  <select className="form-input" value={item.category} onChange={(e) => setMenuItem(index, 'category', e.target.value)} required style={{ height: '38px' }}>
+                  <select className="form-input" value={item.category} onChange={(e) => setMenuItem(index, 'category', e.target.value)} required>
                     <option value="PIZZA">Pizza</option>
                     <option value="BIRYANI">Biryani</option>
                     <option value="BURGER">Burger</option>
@@ -1054,7 +1054,7 @@ export function ManageMenuPage() {
               </div>
               <div className="form-group" style={{ marginBottom: '1rem' }}>
                 <label className="form-label">Category *</label>
-                <select className="form-input" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} required style={{ width: '100%', height: '38px', padding: '0.375rem 0.75rem', borderRadius: '6px', border: '1px solid var(--border)' }}>
+                <select className="form-input" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} required>
                   <option value="PIZZA">Pizza</option>
                   <option value="BIRYANI">Biryani</option>
                   <option value="BURGER">Burger</option>

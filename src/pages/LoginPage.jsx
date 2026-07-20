@@ -4,14 +4,21 @@ import toast from 'react-hot-toast';
 import { login } from '../api/auth';
 import useAuthStore from '../store/authStore';
 
+const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
 export default function LoginPage() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
+  const [emailError, setEmailError] = useState('');
   const { setToken, getRole } = useAuthStore();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!EMAIL_REGEX.test(form.email)) {
+      setEmailError('Enter a valid email address');
+      return;
+    }
     setLoading(true);
     try {
       const res = await login(form);
@@ -48,9 +55,10 @@ export default function LoginPage() {
               className="form-input"
               placeholder="you@example.com"
               value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              onChange={(e) => { setForm({ ...form, email: e.target.value }); setEmailError(''); }}
               required
             />
+            {emailError && <span style={{ color: '#e53e3e', fontSize: '0.8rem' }}>{emailError}</span>}
           </div>
           <div className="form-group">
             <label className="form-label">Password</label>

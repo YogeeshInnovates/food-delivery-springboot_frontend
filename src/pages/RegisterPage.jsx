@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { register, registerOwner } from '../api/auth';
+import { register, registerOwner, verifyOtp } from '../api/auth';
+
+const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+const PHONE_REGEX = /^\d{10}$/;
 
 export default function RegisterPage() {
   const [role, setRole] = useState('CUSTOMER');
@@ -9,11 +12,23 @@ export default function RegisterPage() {
     name: '', email: '', password: '', phoneNumber: '', address: '',
     restaurantName: '', licenseNumber: '', restaurantAddress: '',
   });
+  const [otp, setOtp] = useState('');
+  const [step, setStep] = useState('form'); // 'form' | 'otp'
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const validate = () => {
+    const errs = {};
+    if (!EMAIL_REGEX.test(form.email)) errs.email = 'Enter a valid email address';
+    if (!PHONE_REGEX.test(form.phoneNumber)) errs.phoneNumber = 'Phone must be exactly 10 digits';
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const handleRegister = async (e) => {
     e.preventDefault();
+    if (!validate()) return;
     setLoading(true);
     try {
       if (role === 'CUSTOMER') {
@@ -21,14 +36,65 @@ export default function RegisterPage() {
       } else {
         await registerOwner(form);
       }
-      toast.success('Account created! Please login.');
-      navigate('/login');
+      setStep('otp');
+      toast.success('Verification code sent to your email');
     } catch (err) {
       toast.error(err.message || 'Registration failed');
     } finally {
       setLoading(false);
     }
   };
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await verifyOtp({ email: form.email, otp });
+      toast.success('Account created! Please login.');
+      navigate('/login');
+    } catch (err) {
+      toast.error(err.message || 'Verification failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (step === 'otp') {
+    return (
+      <div className="auth-page">
+        <div className="auth-card">
+          <div className="auth-logo">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ stroke: 'var(--primary)', fill: 'rgba(255, 107, 53, 0.1)' }}>
+              <path d="M2 17h20M12 4a8 8 0 0 0-8 8h16a8 8 0 0 0-8-8zM12 2v2" />
+            </svg>
+          </div>
+          <h2 className="auth-title">Verify Email</h2>
+          <p className="auth-subtitle">We sent a 6-digit code to {form.email}</p>
+
+          <form onSubmit={handleVerifyOtp}>
+            <div className="form-group">
+              <label className="form-label">Enter Verification Code</label>
+              <input type="text" className="form-input" placeholder="000000" maxLength={6}
+                value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))} required />
+            </div>
+            <button type="submit" className="btn btn-primary btn-full btn-lg" disabled={loading || otp.length !== 6}>
+              {loading ? 'Verifying...' : 'Verify & Create Account'}
+            </button>
+          </form>
+
+          <p className="auth-footer" style={{ marginTop: '1rem' }}>
+            Didn't receive the code?{' '}
+            <button
+              onClick={() => { setStep('form'); setOtp(''); }}
+              style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', textDecoration: 'underline', padding: 0, font: 'inherit' }}
+            >
+              Go back and try again
+            </button>
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="auth-page">
@@ -50,7 +116,7 @@ export default function RegisterPage() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleRegister}>
           <div className="form-group">
             <label className="form-label">Full Name</label>
             <input type="text" className="form-input" placeholder="John Doe"
@@ -59,7 +125,8 @@ export default function RegisterPage() {
           <div className="form-group">
             <label className="form-label">Email Address</label>
             <input type="email" className="form-input" placeholder="you@example.com"
-              value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
+              value={form.email} onChange={(e) => { setForm({ ...form, email: e.target.value }); setErrors({ ...errors, email: '' }); }} required />
+            {errors.email && <span style={{ color: '#e53e3e', fontSize: '0.8rem' }}>{errors.email}</span>}
           </div>
           <div className="form-group">
             <label className="form-label">Password</label>
@@ -68,8 +135,9 @@ export default function RegisterPage() {
           </div>
           <div className="form-group">
             <label className="form-label">Phone Number</label>
-            <input type="text" className="form-input" placeholder="+91 9876543210"
-              value={form.phoneNumber} onChange={(e) => setForm({ ...form, phoneNumber: e.target.value })} required />
+            <input type="text" className="form-input" placeholder="9876543210" maxLength={10}
+              value={form.phoneNumber} onChange={(e) => { setForm({ ...form, phoneNumber: e.target.value.replace(/\D/g, '').slice(0, 10) }); setErrors({ ...errors, phoneNumber: '' }); }} required />
+            {errors.phoneNumber && <span style={{ color: '#e53e3e', fontSize: '0.8rem' }}>{errors.phoneNumber}</span>}
           </div>
           <div className="form-group">
             <label className="form-label">Address</label>
@@ -103,7 +171,7 @@ export default function RegisterPage() {
           )}
 
           <button type="submit" className="btn btn-primary btn-full btn-lg" disabled={loading}>
-            {loading ? 'Creating Account...' : `Register as ${role === 'CUSTOMER' ? 'Customer' : 'Owner'}`}
+            {loading ? 'Sending Code...' : `Register as ${role === 'CUSTOMER' ? 'Customer' : 'Owner'}`}
           </button>
         </form>
 

@@ -118,16 +118,31 @@ export default function RestaurantDetailPage() {
               }}>
                 ⭐ {restaurant.rating?.toFixed(1) || '4.0'}
               </span>
-              <span style={{
-                fontSize: '0.85rem',
-                backgroundColor: 'var(--primary-light)',
-                color: 'var(--primary)',
-                padding: '0.2rem 0.65rem',
-                borderRadius: '12px',
-                fontWeight: 700,
-              }}>
-                {restaurant.cuisineType?.split(',')[0]?.trim() || 'Various'}
-              </span>
+              {restaurant.cuisineType ? (
+                restaurant.cuisineType.split(',').map(t => t.trim()).filter(Boolean).map(cuisine => (
+                  <span key={cuisine} style={{
+                    fontSize: '0.85rem',
+                    backgroundColor: 'var(--primary-light)',
+                    color: 'var(--primary)',
+                    padding: '0.2rem 0.65rem',
+                    borderRadius: '12px',
+                    fontWeight: 700,
+                  }}>
+                    {cuisine}
+                  </span>
+                ))
+              ) : (
+                <span style={{
+                  fontSize: '0.85rem',
+                  backgroundColor: 'var(--primary-light)',
+                  color: 'var(--primary)',
+                  padding: '0.2rem 0.65rem',
+                  borderRadius: '12px',
+                  fontWeight: 700,
+                }}>
+                  Various
+                </span>
+              )}
             </div>
 
             <h1 style={{ color: '#0f172a', fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', margin: '0 0 0.5rem', fontWeight: 900, letterSpacing: '-0.03em' }}>
