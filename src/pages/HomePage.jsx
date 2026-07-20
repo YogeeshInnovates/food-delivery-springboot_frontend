@@ -74,17 +74,23 @@ export default function HomePage() {
   return (
     <div className="page" style={{ paddingTop: '76px' }}>
       <style>{`
+        .hero-section {
+          padding: 3rem 0 4.5rem 0;
+        }
         .hero-inner-wrapper {
           padding-left: 0;
         }
         @media (min-width: 768px) {
+          .hero-section {
+            padding: 0;
+          }
           .hero-inner-wrapper {
             padding-left: 2.5rem;
           }
         }
       `}</style>
       {/* Hero Section */}
-      <section style={{
+      <section className="hero-section" style={{
         minHeight: '460px',
         backgroundImage: 'url(https://res.cloudinary.com/daxdbmpbn/image/upload/v1784560319/ChatGPT_Image_Jul_20_2026_05_32_48_PM_g9zyyh.png)',
         backgroundSize: 'cover',
