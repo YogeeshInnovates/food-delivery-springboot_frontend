@@ -71,6 +71,20 @@ export default function RegisterPage() {
           <h2 className="auth-title">Verify Email</h2>
           <p className="auth-subtitle">We sent a 6-digit code to {form.email}</p>
 
+          <div style={{
+            overflow: 'hidden', whiteSpace: 'nowrap', marginBottom: '1rem',
+            borderRadius: '10px', background: 'linear-gradient(135deg, #fef3c7, #ffedd5)',
+            border: '1px solid #fcd34d', padding: '0.5rem 0',
+          }}>
+            <div style={{
+              display: 'inline-block',
+              animation: 'marquee 14s linear infinite',
+              fontSize: '0.82rem', fontWeight: 600, color: '#92400e',
+            }}>
+              📧 &nbsp;Didn't see the email? Check your Spam / Junk folder &nbsp; 📧 &nbsp;Didn't see the email? Check your Spam / Junk folder &nbsp; 📧
+            </div>
+          </div>
+
           <form onSubmit={handleVerifyOtp}>
             <div className="form-group">
               <label className="form-label">Enter Verification Code</label>
