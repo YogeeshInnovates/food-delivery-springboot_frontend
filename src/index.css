@@ -1149,6 +1149,11 @@ tr:hover td {
   border-radius: 40px;
   width: fit-content;
 }
+.restaurant-menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
 
 .menu-item-responsive-card {
   display: flex;
