@@ -14,10 +14,3 @@ export const updateOrderStatus = (id, status) =>
   api.patch(`/api/orders/${id}/status?status=${status}`);
 export const confirmDelivery = (id) =>
   api.post(`/api/orders/${id}/confirm-delivery`);
-
-export const getOwnerOrders = () =>
-  api.get('/api/owner/restaurants/orders');
-export const getOwnerPendingOrders = () =>
-  api.get('/api/owner/restaurants/orders/pending');
-export const acceptOrder = (orderId) =>
-  api.post(`/api/owner/restaurants/orders/${orderId}/accept`);

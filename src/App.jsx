@@ -17,7 +17,7 @@ import OrderDetailPage from './pages/OrderDetailPage';
 import ProfilePage from './pages/ProfilePage';
 
 // Owner
-import { OwnerLayout, OwnerDashboard, AddRestaurantPage, CompleteRegistrationPage, ManageMenuPage, OwnerOrdersPage } from './pages/OwnerPages';
+import { OwnerLayout, OwnerDashboard, AddRestaurantPage, CompleteRegistrationPage, ManageMenuPage } from './pages/OwnerPages';
 
 // Admin
 import AdminLoginPage from './pages/AdminLoginPage';
@@ -62,7 +62,6 @@ export default function App() {
         {/* Owner */}
         <Route path="/owner" element={<ProtectedRoute allowedRoles={['OWNER']}><OwnerLayout /></ProtectedRoute>}>
           <Route path="dashboard" element={<OwnerDashboard />} />
-          <Route path="orders" element={<OwnerOrdersPage />} />
           <Route path="restaurants/add" element={<AddRestaurantPage />} />
           <Route path="restaurants/:id/complete-registration" element={<CompleteRegistrationPage />} />
           <Route path="restaurants/:id/menu" element={<ManageMenuPage />} />
