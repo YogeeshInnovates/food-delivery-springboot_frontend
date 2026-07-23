@@ -98,7 +98,7 @@ export default function CartPage() {
       <div className="container section" style={{ maxWidth: '800px', padding: '3rem 1.5rem 5rem' }}>
         
         {/* Header section */}
-        <div className="page-header flex-between" style={{ marginBottom: '2rem' }}>
+        <div className="page-header flex-between cart-header-responsive" style={{ marginBottom: '2rem' }}>
           <div>
             <span style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
               My Selection
@@ -127,7 +127,7 @@ export default function CartPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             
             {/* Cart Items Card */}
-            <div className="card" style={{ padding: '1.5rem 1.75rem', backgroundColor: '#ffffff', borderRadius: '20px' }}>
+            <div className="card cart-card-responsive" style={{ padding: '1.5rem 1.75rem', backgroundColor: '#ffffff', borderRadius: '20px' }}>
               {cartItems.map((item, idx) => (
                 <div
                   key={item.menuItemId}
@@ -137,67 +137,16 @@ export default function CartPage() {
                     padding: '1.25rem 0',
                   }}
                 >
-                  <div style={{ flex: 1 }}>
+                  <div className="cart-item-details">
                     <div style={{ fontWeight: 800, fontSize: '1.05rem', color: '#0f172a' }}>{item.name}</div>
                     <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.15rem', fontWeight: 600 }}>
                       ₹{item.price?.toFixed(2)} each
                     </div>
                   </div>
                   
-                  {/* Styled quantity counters */}
-                  <div className="cart-qty">
-                    <button
-                      onClick={() => handleQty(item.menuItemId, item.quantity - 1)}
-                      style={{
-                        width: '30px',
-                        height: '30px',
-                        borderRadius: '50%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        border: '1.5px solid var(--border)',
-                        background: '#fafaf9',
-                        fontWeight: 800,
-                        cursor: 'pointer',
-                        transition: 'var(--transition)',
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.borderColor = 'var(--primary)'}
-                      onMouseLeave={(e) => e.currentTarget.style.borderColor = 'var(--border)'}
-                    >
-                      −
-                    </button>
-                    <span style={{ fontWeight: 800, fontSize: '0.95rem', minWidth: '1.5rem', textAlign: 'center', color: '#0f172a' }}>
-                      {item.quantity}
-                    </span>
-                    <button
-                      onClick={() => handleQty(item.menuItemId, item.quantity + 1)}
-                      style={{
-                        width: '30px',
-                        height: '30px',
-                        borderRadius: '50%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        border: '1.5px solid var(--border)',
-                        background: '#fafaf9',
-                        fontWeight: 800,
-                        cursor: 'pointer',
-                        transition: 'var(--transition)',
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.borderColor = 'var(--primary)'}
-                      onMouseLeave={(e) => e.currentTarget.style.borderColor = 'var(--border)'}
-                    >
-                      +
-                    </button>
-                  </div>
-
-                  <div style={{ fontWeight: 800, fontSize: '1.1rem', color: '#0f172a', minWidth: '85px', textAlign: 'right' }}>
-                    ₹{(item.price * item.quantity).toFixed(2)}
-                  </div>
-
                   {/* SVG Trash Icon instead of standard X */}
                   <button
-                    className="btn btn-sm"
+                    className="btn btn-sm cart-item-delete"
                     onClick={() => handleRemove(item.menuItemId)}
                     style={{
                       background: 'transparent',
@@ -218,12 +167,66 @@ export default function CartPage() {
                       <line x1="14" y1="11" x2="14" y2="17"></line>
                     </svg>
                   </button>
+
+                  {/* Actions wrapper to group quantity controls and total price */}
+                  <div className="cart-item-actions-wrapper">
+                    {/* Styled quantity counters */}
+                    <div className="cart-qty">
+                      <button
+                        onClick={() => handleQty(item.menuItemId, item.quantity - 1)}
+                        style={{
+                          width: '30px',
+                          height: '30px',
+                          borderRadius: '50%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          border: '1.5px solid var(--border)',
+                          background: '#fafaf9',
+                          fontWeight: 800,
+                          cursor: 'pointer',
+                          transition: 'var(--transition)',
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.borderColor = 'var(--primary)'}
+                        onMouseLeave={(e) => e.currentTarget.style.borderColor = 'var(--border)'}
+                      >
+                        −
+                      </button>
+                      <span style={{ fontWeight: 800, fontSize: '0.95rem', minWidth: '1.5rem', textAlign: 'center', color: '#0f172a' }}>
+                        {item.quantity}
+                      </span>
+                      <button
+                        onClick={() => handleQty(item.menuItemId, item.quantity + 1)}
+                        style={{
+                          width: '30px',
+                          height: '30px',
+                          borderRadius: '50%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          border: '1.5px solid var(--border)',
+                          background: '#fafaf9',
+                          fontWeight: 800,
+                          cursor: 'pointer',
+                          transition: 'var(--transition)',
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.borderColor = 'var(--primary)'}
+                        onMouseLeave={(e) => e.currentTarget.style.borderColor = 'var(--border)'}
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    <div className="cart-item-total" style={{ fontWeight: 800, fontSize: '1.1rem', color: '#0f172a', minWidth: '85px', textAlign: 'right' }}>
+                      ₹{(item.price * item.quantity).toFixed(2)}
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
 
             {/* Premium receipt invoice card to fill empty layout gaps */}
-            <div className="card" style={{ padding: '1.75rem 2rem', backgroundColor: '#ffffff', borderRadius: '20px' }}>
+            <div className="card cart-card-responsive" style={{ padding: '1.75rem 2rem', backgroundColor: '#ffffff', borderRadius: '20px' }}>
               <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', marginBottom: '1.25rem', letterSpacing: '-0.01em' }}>
                 Order Invoice Summary
               </h3>

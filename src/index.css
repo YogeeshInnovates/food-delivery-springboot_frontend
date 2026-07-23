@@ -1292,3 +1292,69 @@ tr:hover td {
   }
 }
 
+/* ===== Cart Page Responsive Layouts ===== */
+
+.cart-item-actions-wrapper {
+  display: contents;
+}
+
+@media (max-width: 768px) {
+  /* Cart container section padding */
+  .container.section {
+    padding: 1.5rem 1rem 3rem !important;
+  }
+
+  /* Cart Card Padding */
+  .cart-card-responsive {
+    padding: 1.25rem !important;
+    border-radius: 16px !important;
+  }
+
+  .cart-item {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem !important;
+    padding: 1rem 0 !important;
+    align-items: center;
+  }
+
+  .cart-item-details {
+    order: 1;
+    flex: 1;
+  }
+
+  .cart-item-delete {
+    order: 2;
+    background: transparent !important;
+  }
+
+  .cart-item-actions-wrapper {
+    order: 3;
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1.5px dashed var(--border);
+    padding-top: 0.85rem;
+    margin-top: 0.15rem;
+  }
+
+  .cart-item-total {
+    min-width: unset !important;
+    text-align: right;
+  }
+
+  /* Cart header */
+  .cart-header-responsive {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 1rem !important;
+  }
+
+  .cart-header-responsive button {
+    align-self: stretch;
+    text-align: center;
+  }
+}
+
+
