@@ -58,7 +58,7 @@ export default function PaymentPage() {
           ? 'Order placed! Pay on delivery 💵'
           : 'Payment successful! ✅'
       );
-      navigate(`/tracking/${id}`, { replace: true });
+      navigate(`/orders/${id}`, { replace: true });
     } catch (err) {
       toast.error(err.message);
     } finally {

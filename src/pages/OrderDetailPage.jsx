@@ -281,6 +281,31 @@ export default function OrderDetailPage() {
           )}
 
           {/* Action triggers */}
+          {order.status === 'PLACED' && (
+            <div style={{
+              marginTop: '1.5rem', padding: '1.5rem', borderRadius: '16px', textAlign: 'center',
+              background: 'linear-gradient(135deg, #fef3c7, #ffedd5)',
+              border: '1.5px solid #fcd34d',
+            }}>
+              <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>⏳</div>
+              <div style={{ fontWeight: 700, fontSize: '1rem', color: '#92400e', marginBottom: '0.35rem' }}>
+                Waiting for restaurant to accept your order
+              </div>
+              <div style={{ fontSize: '0.85rem', color: '#b45309', fontWeight: 500 }}>
+                The restaurant will confirm your order shortly. You can track it once accepted.
+              </div>
+              {getRole() === 'CUSTOMER' && (
+                <button
+                  className="btn btn-danger"
+                  onClick={handleCancel}
+                  disabled={cancelling}
+                  style={{ borderRadius: '30px', marginTop: '1rem', padding: '0.5rem 1.5rem', fontSize: '0.85rem', fontWeight: 700 }}
+                >
+                  {cancelling ? <span className="spinner-sm" /> : '✕ Cancel Order'}
+                </button>
+              )}
+            </div>
+          )}
           {order.status === 'ACCEPTED' || order.status === 'PREPARING' || order.status === 'OUT_FOR_DELIVERY' ? (
             <div style={{ marginTop: '1.5rem' }}>
               <button
