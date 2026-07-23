@@ -35,6 +35,21 @@ export default function OrderDetailPage() {
       .finally(() => setLoading(false));
   }, [id]);
 
+  useEffect(() => {
+    if (!order || order.status !== 'PLACED') return;
+    const interval = setInterval(() => {
+      getOrderDetails(id)
+        .then((r) => {
+          if (r.data.status !== 'PLACED') {
+            setOrder(r.data);
+            toast.success('Restaurant accepted your order! 🎉');
+          }
+        })
+        .catch(() => {});
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [order?.status, id]);
+
   const handleCancel = async () => {
     if (!confirm('Are you sure you want to cancel this order?')) return;
     setCancelling(true);

@@ -36,7 +36,7 @@ export default function PaymentPage() {
     getOrderDetails(id)
       .then((r) => {
         if (r.data.status !== 'PENDING_PAYMENT') {
-          navigate(`/orders/${id}`, { replace: true });
+          navigate(`/tracking/${id}`, { replace: true });
           return;
         }
         setOrder(r.data);
@@ -58,7 +58,7 @@ export default function PaymentPage() {
           ? 'Order placed! Pay on delivery 💵'
           : 'Payment successful! ✅'
       );
-      navigate(`/tracking/${id}`, { replace: true });
+      navigate(`/orders/${id}`, { replace: true });
     } catch (err) {
       toast.error(err.message);
     } finally {

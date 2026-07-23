@@ -20,6 +20,7 @@ const DELIVERY_PARTNERS = [
 
 const STATUSES = [
   { key: 'PLACED', label: 'Order Placed', icon: '✅' },
+  { key: 'ACCEPTED', label: 'Order Accepted', icon: '👍' },
   { key: 'PREPARING', label: 'Preparing Your Food', icon: '👨‍🍳' },
   { key: 'OUT_FOR_DELIVERY', label: 'Out for Delivery', icon: '🛵' },
   { key: 'DELIVERED', label: 'Delivered', icon: '📍' },
@@ -107,6 +108,21 @@ export default function OrderTrackingPage() {
   }, [id]);
 
   useEffect(() => {
+    if (!order || order.status !== 'PLACED') return;
+    const interval = setInterval(() => {
+      getOrderDetails(id)
+        .then((r) => {
+          if (r.data.status !== 'PLACED') {
+            setOrder(r.data);
+            toast.success('Restaurant accepted your order! 🎉');
+          }
+        })
+        .catch(() => {});
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [order?.status, id]);
+
+  useEffect(() => {
     if (!order) return;
 
     const restLat = order.restaurantLatitude || 12.9716;
@@ -151,7 +167,7 @@ export default function OrderTrackingPage() {
       } catch (e) { return false; }
     })();
     if (wasDelivered) {
-      setCurrentStep(3);
+      setCurrentStep(4);
       setBikeProgress(1);
       setEta('');
       updateMapPosition(
@@ -175,10 +191,10 @@ export default function OrderTrackingPage() {
     const cappedEta = Math.min(etaMin, 2);
     setEta(`${cappedEta} min`);
 
-    const PLACED_DURATION = 5000;
+    const ACCEPTED_DURATION = 2000;
     const PREP_DURATION = 30000;
-    const totalMs = Math.max(PLACED_DURATION + PREP_DURATION + 5000, cappedEta * 60 * 1000);
-    const deliveryWindow = totalMs - PLACED_DURATION - PREP_DURATION;
+    const totalMs = Math.max(ACCEPTED_DURATION + PREP_DURATION + 5000, cappedEta * 60 * 1000);
+    const deliveryWindow = totalMs - ACCEPTED_DURATION - PREP_DURATION;
 
     const storageKey = `tracking_${order.id}`;
     let startTime = (() => {
@@ -195,20 +211,20 @@ export default function OrderTrackingPage() {
       const remaining = Math.max(0, Math.ceil((totalMs - elapsed) / 1000));
       setEta(`${Math.ceil(remaining / 60)}m`);
 
-      if (elapsed < PLACED_DURATION) {
-        setCurrentStep(0);
-        setBikeProgress(0);
-      } else if (elapsed < PLACED_DURATION + PREP_DURATION) {
+      if (elapsed < ACCEPTED_DURATION) {
         setCurrentStep(1);
         setBikeProgress(0);
-      } else if (elapsed < totalMs) {
+      } else if (elapsed < ACCEPTED_DURATION + PREP_DURATION) {
         setCurrentStep(2);
-        const deliveryProgress = (elapsed - PLACED_DURATION - PREP_DURATION) / deliveryWindow;
+        setBikeProgress(0);
+      } else if (elapsed < totalMs) {
+        setCurrentStep(3);
+        const deliveryProgress = (elapsed - ACCEPTED_DURATION - PREP_DURATION) / deliveryWindow;
         const clamped = Math.min(deliveryProgress, 1);
         setBikeProgress(clamped);
         updateMapPosition(restLat, restLng, userLat, userLng, clamped);
       } else {
-        setCurrentStep(3);
+        setCurrentStep(4);
         setBikeProgress(1);
         updateMapPosition(restLat, restLng, userLat, userLng, 1);
       }
@@ -234,7 +250,7 @@ export default function OrderTrackingPage() {
   if (loading) return <div className="page"><div className="spinner" /></div>;
   if (!order) return null;
 
-  const isDelivered = currentStep >= 3;
+  const isDelivered = currentStep >= 4;
   const restName = order.restaurantName || 'Restaurant';
 
   return (
@@ -265,7 +281,7 @@ export default function OrderTrackingPage() {
         </div>
 
         {/* ETA Card */}
-        {!isDelivered && eta && (
+        {!isDelivered && eta && order.status !== 'PLACED' && (
           <div className="card" style={{
             padding: '1.25rem', marginBottom: '1rem', textAlign: 'center',
             borderRadius: '16px',
@@ -304,8 +320,33 @@ export default function OrderTrackingPage() {
           <span style={{ fontWeight: 900, color: 'var(--primary)', fontSize: '1.15rem' }}>₹{order.totalAmount?.toFixed(2)}</span>
         </div>
 
+        {/* Waiting for Restaurant Acceptance */}
+        {order.status === 'PLACED' && (
+          <div className="card" style={{
+            padding: '1.75rem', marginBottom: '1rem', borderRadius: '16px', textAlign: 'center',
+            background: 'linear-gradient(135deg, #fef3c7, #ffedd5)',
+            border: '1.5px solid #fcd34d',
+          }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>⏳</div>
+            <div style={{ fontWeight: 700, fontSize: '1.05rem', color: '#92400e', marginBottom: '0.3rem' }}>
+              Waiting for restaurant to accept your order
+            </div>
+            <div style={{ fontSize: '0.85rem', color: '#b45309', fontWeight: 500, marginBottom: '0.75rem' }}>
+              {restName} will confirm your order shortly...
+            </div>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+              fontSize: '0.8rem', color: '#92400e', fontWeight: 600,
+              background: '#fff', padding: '0.35rem 0.85rem', borderRadius: '20px',
+              border: '1px solid #fcd34d',
+            }}>
+              <span className="spinner-sm" /> Auto-checking every few seconds
+            </div>
+          </div>
+        )}
+
         {/* Delivery Partner Card */}
-        {partner && !isDelivered && (
+        {partner && !isDelivered && order.status !== 'PLACED' && (
           <div className="card" style={{
             padding: '1.25rem 1.5rem', marginBottom: '1rem', borderRadius: '16px',
             background: 'linear-gradient(135deg, #f0f9ff, #e0f2fe)',
@@ -332,13 +373,13 @@ export default function OrderTrackingPage() {
                 </div>
                 <div style={{
                   fontSize: '0.85rem', marginTop: '0.35rem', fontWeight: 600,
-                  color: currentStep === 1 ? '#d97706' : 'var(--primary)',
-                  background: currentStep === 1 ? '#fef3c7' : '#e0f2fe',
+                  color: currentStep === 2 ? '#d97706' : 'var(--primary)',
+                  background: currentStep === 2 ? '#fef3c7' : '#e0f2fe',
                   display: 'inline-block', padding: '0.2rem 0.75rem', borderRadius: '20px',
                 }}>
-                  {currentStep === 1
+                  {currentStep === 2
                     ? `🔄 Heading to ${restName} to pick up your order`
-                    : currentStep === 2
+                    : currentStep === 3
                       ? '🛵 Your food is on the way!'
                       : '📍 Getting your order ready'}
                 </div>
@@ -348,7 +389,7 @@ export default function OrderTrackingPage() {
         )}
 
         {/* Cancel section (visible during PLACED / PREPARING) */}
-        {currentStep >= 0 && currentStep < 2 && (
+        {currentStep >= 1 && currentStep < 3 && (
           <div className="card" style={{
             padding: '1.25rem', marginBottom: '1rem', borderRadius: '16px', textAlign: 'center',
             background: 'linear-gradient(135deg, #fef3c7, #ffedd5)',

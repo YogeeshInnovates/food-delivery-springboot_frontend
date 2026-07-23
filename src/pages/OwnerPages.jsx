@@ -3,6 +3,7 @@ import { NavLink, Outlet, useNavigate, useParams, useLocation } from 'react-rout
 import toast from 'react-hot-toast';
 import { getMyRestaurants, addRestaurant, updateRestaurant, toggleRestaurantStatus, uploadRestaurantImage, getMyRestaurantById, completeRegistration, deleteRestaurantImage } from '../api/restaurants';
 import { getMenu, addMenuItem, updateMenuItem, deleteMenuItem, toggleAvailability, uploadMenuItemImage, uploadTempMenuItemImage, deleteTempMenuImage } from '../api/menu';
+import { getOwnerOrders, acceptOrder } from '../api/orders';
 
 const CUISINE_OPTIONS = ['North Indian', 'South Indian', 'Chinese', 'Italian', 'Fast Food', 'Desserts', 'Beverages', 'Continental', 'Mexican', 'Japanese'];
 
@@ -45,6 +46,7 @@ export function OwnerLayout() {
         </div>
         <div className="sidebar-title" style={{ fontSize: '0.75rem', textTransform: 'uppercase', tracking: '0.05em', color: 'var(--text-muted)', marginBottom: '1rem', fontWeight: 600 }}>Management</div>
         <NavLink to="/owner/dashboard" end className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`} style={{ display: 'block', padding: '0.75rem 1rem', borderRadius: '8px', color: 'var(--text)', textDecoration: 'none', marginBottom: '0.5rem', fontWeight: 500 }}>📊 My Restaurants</NavLink>
+        <NavLink to="/owner/orders" className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`} style={{ display: 'block', padding: '0.75rem 1rem', borderRadius: '8px', color: 'var(--text)', textDecoration: 'none', marginBottom: '0.5rem', fontWeight: 500 }}>📦 Orders</NavLink>
         <NavLink to="/owner/restaurants/add" className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`} style={{ display: 'block', padding: '0.75rem 1rem', borderRadius: '8px', color: 'var(--text)', textDecoration: 'none', marginBottom: '0.5rem', fontWeight: 500 }}>➕ Register Restaurant</NavLink>
       </aside>
       <main className="dashboard-content" style={{ flex: 1, padding: '2.5rem', backgroundColor: '#fafafa' }}>
@@ -1087,6 +1089,144 @@ export function ManageMenuPage() {
               </div>
             </form>
           </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Owner Orders Page ────────────────────────────────────────────────────────
+const ORDER_STATUS_BADGE = {
+  PLACED: 'badge-warning',
+  ACCEPTED: 'badge-info',
+  PREPARING: 'badge-primary',
+  OUT_FOR_DELIVERY: 'badge-warning',
+  DELIVERED: 'badge-success',
+  CANCELLED: 'badge-danger',
+  PENDING_PAYMENT: 'badge-muted',
+};
+
+export function OwnerOrdersPage() {
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [accepting, setAccepting] = useState(null);
+
+  useEffect(() => { loadOrders(); }, []);
+
+  const loadOrders = async () => {
+    try {
+      const res = await getOwnerOrders();
+      setOrders(res.data || []);
+    } catch (err) {
+      toast.error(err.message || 'Failed to load orders');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAccept = async (orderId) => {
+    setAccepting(orderId);
+    try {
+      await acceptOrder(orderId);
+      toast.success(`Order #${orderId} accepted!`);
+      loadOrders();
+    } catch (err) {
+      toast.error(err.response?.data?.message || err.message || 'Failed to accept order');
+    } finally {
+      setAccepting(null);
+    }
+  };
+
+  if (loading) return <div className="spinner" />;
+
+  const pendingOrders = orders.filter(o => o.status === 'PLACED');
+  const activeOrders = orders.filter(o => ['ACCEPTED', 'PREPARING', 'OUT_FOR_DELIVERY'].includes(o.status));
+  const completedOrders = orders.filter(o => o.status === 'DELIVERED' || o.status === 'CANCELLED');
+
+  const renderOrderCard = (o, showAccept) => (
+    <div key={o.id} className="card" style={{
+      padding: '1.25rem', borderRadius: '12px',
+      border: o.status === 'PLACED' ? '2px solid #f59e0b' : '1px solid var(--border)',
+      background: '#ffffff',
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
+        <div>
+          <div style={{ fontWeight: 700, fontSize: '1rem', color: '#0f172a' }}>Order #{o.id}</div>
+          <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 500 }}>{o.customerName || 'Customer'}</div>
+        </div>
+        <span className={`badge ${ORDER_STATUS_BADGE[o.status] || 'badge-muted'}`} style={{ fontSize: '0.75rem', padding: '0.3rem 0.7rem' }}>
+          {o.status?.replace('_', ' ')}
+        </span>
+      </div>
+      <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
+        {(o.items || []).map(i => `${i.name} x${i.quantity}`).join(', ')}
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border)' }}>
+        <span style={{ fontWeight: 700, color: 'var(--primary)', fontSize: '1.1rem' }}>₹{o.totalAmount?.toFixed(2)}</span>
+        {showAccept && (
+          <button
+            className="btn btn-primary"
+            style={{ padding: '0.5rem 1.5rem', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 700 }}
+            disabled={accepting === o.id}
+            onClick={() => handleAccept(o.id)}
+          >
+            {accepting === o.id ? 'Accepting...' : '✓ Accept Order'}
+          </button>
+        )}
+      </div>
+      {o.placedAt && (
+        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '0.5rem' }}>
+          {new Date(o.placedAt).toLocaleString()}
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <div style={{ paddingTop: '1rem' }}>
+      <div className="page-header" style={{ marginBottom: '2rem' }}>
+        <h2 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '0.25rem' }}>Orders</h2>
+        <p style={{ color: 'var(--text-muted)' }}>Manage incoming and active orders</p>
+      </div>
+
+      {pendingOrders.length > 0 && (
+        <div style={{ marginBottom: '2rem' }}>
+          <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#f59e0b', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            🔔 New Orders ({pendingOrders.length})
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {pendingOrders.map(o => renderOrderCard(o, true))}
+          </div>
+        </div>
+      )}
+
+      {activeOrders.length > 0 && (
+        <div style={{ marginBottom: '2rem' }}>
+          <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--primary)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            🚀 Active Orders ({activeOrders.length})
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {activeOrders.map(o => renderOrderCard(o, false))}
+          </div>
+        </div>
+      )}
+
+      {completedOrders.length > 0 && (
+        <div>
+          <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            📋 History ({completedOrders.length})
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {completedOrders.map(o => renderOrderCard(o, false))}
+          </div>
+        </div>
+      )}
+
+      {orders.length === 0 && (
+        <div className="card" style={{ textAlign: 'center', padding: '3rem', borderRadius: '12px' }}>
+          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📦</div>
+          <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.5rem' }}>No orders yet</h3>
+          <p style={{ color: 'var(--text-muted)' }}>Orders from customers will appear here.</p>
         </div>
       )}
     </div>
