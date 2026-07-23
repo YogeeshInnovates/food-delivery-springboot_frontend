@@ -12,3 +12,5 @@ export const cancelOrder = (id, reason) => api.post(`/api/orders/${id}/cancel`, 
 export const getMyTotalSpend = () => api.get('/api/orders/summary');
 export const updateOrderStatus = (id, status) =>
   api.patch(`/api/orders/${id}/status?status=${status}`);
+export const confirmDelivery = (id) =>
+  api.post(`/api/orders/${id}/confirm-delivery`);
