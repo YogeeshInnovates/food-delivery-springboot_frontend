@@ -85,10 +85,6 @@ export default function OrderTrackingPage() {
           navigate(`/payment/${id}`, { replace: true });
           return;
         }
-        if (r.data.status === 'PLACED') {
-          navigate(`/orders/${id}`, { replace: true });
-          return;
-        }
         setOrder(r.data);
         const idx = STATUSES.findIndex((s) => s.key === r.data.status);
         setCurrentStep(idx >= 0 ? idx : -1);
@@ -110,6 +106,21 @@ export default function OrderTrackingPage() {
       .catch((err) => toast.error(err.message))
       .finally(() => setLoading(false));
   }, [id]);
+
+  useEffect(() => {
+    if (!order || order.status !== 'PLACED') return;
+    const interval = setInterval(() => {
+      getOrderDetails(id)
+        .then((r) => {
+          if (r.data.status !== 'PLACED') {
+            setOrder(r.data);
+            toast.success('Restaurant accepted your order! 🎉');
+          }
+        })
+        .catch(() => {});
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [order?.status, id]);
 
   useEffect(() => {
     if (!order) return;
@@ -270,7 +281,7 @@ export default function OrderTrackingPage() {
         </div>
 
         {/* ETA Card */}
-        {!isDelivered && eta && (
+        {!isDelivered && eta && order.status !== 'PLACED' && (
           <div className="card" style={{
             padding: '1.25rem', marginBottom: '1rem', textAlign: 'center',
             borderRadius: '16px',
@@ -309,8 +320,33 @@ export default function OrderTrackingPage() {
           <span style={{ fontWeight: 900, color: 'var(--primary)', fontSize: '1.15rem' }}>₹{order.totalAmount?.toFixed(2)}</span>
         </div>
 
+        {/* Waiting for Restaurant Acceptance */}
+        {order.status === 'PLACED' && (
+          <div className="card" style={{
+            padding: '1.75rem', marginBottom: '1rem', borderRadius: '16px', textAlign: 'center',
+            background: 'linear-gradient(135deg, #fef3c7, #ffedd5)',
+            border: '1.5px solid #fcd34d',
+          }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>⏳</div>
+            <div style={{ fontWeight: 700, fontSize: '1.05rem', color: '#92400e', marginBottom: '0.3rem' }}>
+              Waiting for restaurant to accept your order
+            </div>
+            <div style={{ fontSize: '0.85rem', color: '#b45309', fontWeight: 500, marginBottom: '0.75rem' }}>
+              {restName} will confirm your order shortly...
+            </div>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+              fontSize: '0.8rem', color: '#92400e', fontWeight: 600,
+              background: '#fff', padding: '0.35rem 0.85rem', borderRadius: '20px',
+              border: '1px solid #fcd34d',
+            }}>
+              <span className="spinner-sm" /> Auto-checking every few seconds
+            </div>
+          </div>
+        )}
+
         {/* Delivery Partner Card */}
-        {partner && !isDelivered && (
+        {partner && !isDelivered && order.status !== 'PLACED' && (
           <div className="card" style={{
             padding: '1.25rem 1.5rem', marginBottom: '1rem', borderRadius: '16px',
             background: 'linear-gradient(135deg, #f0f9ff, #e0f2fe)',
