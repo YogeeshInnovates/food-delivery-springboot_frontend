@@ -52,14 +52,13 @@ export default function OrderDetailPage() {
   if (loading) return <div className="page"><div className="spinner" /></div>;
   if (!order) return <div className="page flex-center"><p>Order not found</p></div>;
 
-  // Compute status step index for timeline stepper (reversed numbering)
   const getStepIndex = (status) => {
     if (status === 'CANCELLED') return -1;
-    if (status === 'PENDING_PAYMENT' || status === 'PLACED') return 4;
-    if (status === 'ACCEPTED' || status === 'PREPARING') return 3;
-    if (status === 'OUT_FOR_DELIVERY') return 2;
-    if (status === 'DELIVERED') return 1;
-    return 4;
+    if (status === 'PENDING_PAYMENT' || status === 'PLACED') return 1;
+    if (status === 'ACCEPTED' || status === 'PREPARING') return 2;
+    if (status === 'OUT_FOR_DELIVERY') return 3;
+    if (status === 'DELIVERED') return 4;
+    return 1;
   };
 
   const currentStep = isDelivered ? 4 : getStepIndex(order.status);
@@ -104,7 +103,7 @@ export default function OrderDetailPage() {
               borderRadius: '16px',
               border: '1.5px solid var(--border)',
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', width: '100%', flexDirection: 'row-reverse' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', width: '100%' }}>
                 {/* Horizontal connection line */}
                 <div style={{
                   position: 'absolute',
@@ -120,8 +119,8 @@ export default function OrderDetailPage() {
                 <div style={{
                   position: 'absolute',
                   top: '15px',
-                  right: '10%',
-                  width: currentStep === 4 ? '20%' : currentStep === 3 ? '47%' : currentStep === 2 ? '73%' : '80%',
+                  left: '10%',
+                  width: currentStep === 1 ? '20%' : currentStep === 2 ? '47%' : currentStep === 3 ? '73%' : '80%',
                   height: '4px',
                   background: 'linear-gradient(90deg, var(--primary), var(--secondary))',
                   zIndex: 2,
@@ -129,12 +128,12 @@ export default function OrderDetailPage() {
                 }} />
 
                 {[
-                  { title: 'Placed', icon: '📝', step: 4 },
-                  { title: 'Preparing', icon: '🍳', step: 3 },
-                  { title: 'Dispatched', icon: '🛵', step: 2 },
-                  { title: 'Delivered', icon: '✅', step: 1 },
+                  { title: 'Placed', icon: '📝', step: 1 },
+                  { title: 'Preparing', icon: '🍳', step: 2 },
+                  { title: 'Dispatched', icon: '🛵', step: 3 },
+                  { title: 'Delivered', icon: '✅', step: 4 },
                 ].map((s) => {
-                  const isActive = currentStep <= s.step;
+                  const isActive = currentStep >= s.step;
                   return (
                     <div key={s.step} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 3, flex: 1, textAlign: 'center' }}>
                       <div style={{
