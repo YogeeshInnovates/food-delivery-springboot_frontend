@@ -62,28 +62,9 @@ export default function RestaurantDetailPage() {
     <div className="page" style={{ backgroundColor: 'var(--bg)', minHeight: '100vh', paddingTop: '76px' }}>
       <div className="container" style={{ maxWidth: '1000px', margin: '0 auto', padding: '2rem 1.5rem 4rem' }}>
         {/* Modern Split Header Info Block */}
-        <div className="card" style={{
-          padding: '2rem',
-          backgroundColor: '#ffffff',
-          borderRadius: '20px',
-          boxShadow: 'var(--shadow)',
-          marginBottom: '2.5rem',
-          border: '1px solid var(--border)',
-          display: 'flex',
-          gap: '2rem',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-        }}>
+        <div className="restaurant-detail-header">
           {/* Small image at left */}
-          <div style={{
-            width: '240px',
-            height: '180px',
-            borderRadius: '16px',
-            overflow: 'hidden',
-            flexShrink: 0,
-            boxShadow: 'var(--shadow-sm)',
-            backgroundColor: 'var(--border)',
-          }}>
+          <div className="restaurant-detail-img-wrapper">
             {restaurant.imageUrl ? (
               <img src={restaurant.imageUrl} alt={restaurant.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             ) : (
@@ -102,7 +83,7 @@ export default function RestaurantDetailPage() {
           </div>
 
           {/* Restaurant details at right */}
-          <div style={{ flex: 1, minWidth: '280px' }}>
+          <div className="restaurant-detail-info">
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
               <span className="badge badge-success" style={{ padding: '0.3rem 0.8rem', fontSize: '0.75rem', fontWeight: 800 }}>OPEN</span>
               <span style={{
@@ -113,7 +94,7 @@ export default function RestaurantDetailPage() {
                 fontSize: '0.9rem',
                 fontWeight: 700,
                 background: '#fef3c7',
-                padding: '0.2rem 0.6rem',
+                padding: '0.2rem 0.65rem',
                 borderRadius: '12px',
               }}>
                 ⭐ {restaurant.rating?.toFixed(1) || '4.0'}
@@ -155,13 +136,7 @@ export default function RestaurantDetailPage() {
               </p>
             )}
 
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: '1rem',
-              borderTop: '1.5px solid var(--border)',
-              paddingTop: '1.25rem',
-            }}>
+            <div className="restaurant-detail-grid">
               {[
                 { label: 'DELIVERY AREA', value: restaurant.city || 'Local', icon: '📍' },
                 { label: 'CUISINE TYPE', value: restaurant.cuisineType?.split(',').map(t => t.trim()).join(', ') || 'Various', icon: '🍴' },
@@ -185,16 +160,7 @@ export default function RestaurantDetailPage() {
 
         {/* Category Pill Filters */}
         {categories.length > 0 && (
-          <div style={{
-            display: 'flex',
-            gap: '0.6rem',
-            flexWrap: 'wrap',
-            marginBottom: '2rem',
-            background: 'rgba(0,0,0,0.02)',
-            padding: '0.5rem',
-            borderRadius: '40px',
-            width: 'fit-content',
-          }}>
+          <div className="restaurant-category-container">
             {['', ...categories].map((c) => (
               <button
                 key={c || 'all'}
@@ -243,45 +209,19 @@ export default function RestaurantDetailPage() {
             <p>There are no items added under this category yet. Check back soon!</p>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div className="restaurant-menu-list">
             {filtered.map((item) => (
-              <div
-                key={item.id}
-                className="card"
-                style={{
-                  display: 'flex',
-                  padding: 0,
-                  overflow: 'hidden',
-                  borderRadius: '16px',
-                  backgroundColor: '#ffffff',
-                }}
-              >
+              <div key={item.id} className="menu-item-responsive-card">
                 {/* Product image block or circle/square placeholder */}
                 {item.imageUrl ? (
-                  <div style={{
-                    width: '120px',
-                    height: '120px',
-                    margin: '1.25rem',
-                    borderRadius: '12px',
-                    overflow: 'hidden',
-                    flexShrink: 0,
-                    position: 'relative',
-                  }}>
-                    <img src={item.imageUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <div className="menu-item-responsive-img-wrapper">
+                    <img src={item.imageUrl} alt={item.name} />
                   </div>
                 ) : (
-                  <div style={{
-                    width: '120px',
-                    height: '120px',
-                    margin: '1.25rem',
-                    borderRadius: '12px',
-                    backgroundColor: item.isVeg ? '#f0fdf4' : '#fef2f2',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    flexShrink: 0,
-                    position: 'relative',
-                  }}>
+                  <div
+                    className="menu-item-responsive-placeholder"
+                    style={{ backgroundColor: item.isVeg ? '#f0fdf4' : '#fef2f2' }}
+                  >
                     {/* Circle Veg/Non-Veg visual design inside placeholder */}
                     <div style={{
                       width: '48px',
@@ -300,7 +240,7 @@ export default function RestaurantDetailPage() {
                 )}
 
                 {/* Details pane */}
-                <div style={{ flex: 1, padding: '1.25rem 1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <div className="menu-item-responsive-details">
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem', flexWrap: 'wrap' }}>
                     {/* Circle indicator badge */}
                     <span style={{
@@ -356,17 +296,7 @@ export default function RestaurantDetailPage() {
                 </div>
 
                 {/* Pricing & Add block */}
-                <div style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: '1.25rem 1.75rem',
-                  gap: '0.6rem',
-                  borderLeft: '1.5px solid var(--border)',
-                  minWidth: '130px',
-                  backgroundColor: '#fafaf9',
-                }}>
+                <div className="menu-item-responsive-pricing">
                   <span style={{ fontSize: '1.3rem', fontWeight: 900, color: '#0f172a' }}>
                     ₹{item.price?.toFixed(2)}
                   </span>
@@ -375,8 +305,7 @@ export default function RestaurantDetailPage() {
                     <button
                       onClick={() => handleAddToCart(item)}
                       disabled={addingId === item.id}
-                      className="btn btn-primary btn-sm"
-                      style={{ borderRadius: '20px', width: '100%', padding: '0.45rem' }}
+                      className="btn btn-primary btn-sm menu-item-responsive-pricing-btn"
                     >
                       {addingId === item.id ? (
                         <span className="spinner-sm" />
