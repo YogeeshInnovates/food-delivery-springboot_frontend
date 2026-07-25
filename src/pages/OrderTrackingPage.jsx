@@ -89,6 +89,11 @@ export default function OrderTrackingPage() {
         const idx = STATUSES.findIndex((s) => s.key === r.data.status);
         setCurrentStep(idx >= 0 ? idx : -1);
 
+        const trackingKey = `tracking_${id}`;
+        if (!localStorage.getItem(trackingKey)) {
+          try { localStorage.setItem(trackingKey, Date.now()); } catch (e) {}
+        }
+
         const partnerKey = `partner_${id}`;
         let selected = (() => { try { return JSON.parse(localStorage.getItem(partnerKey)); } catch (e) { return null; } })();
         if (!selected) {
