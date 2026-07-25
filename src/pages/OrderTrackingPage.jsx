@@ -75,8 +75,7 @@ export default function OrderTrackingPage() {
     const lat = interpolate(restLat, userLat, progress);
     const lng = interpolate(restLng, userLng, progress);
     bikeMarker.current.setLatLng([lat, lng]);
-    const bounds = L.latLngBounds([restLat, restLng], [userLat, userLng]).extend([lat, lng]);
-    mapInstance.current.fitBounds(bounds, { padding: [60, 60], maxZoom: 14, animate: true });
+    mapInstance.current.setView([lat, lng], 13, { animate: true });
   }, []);
 
   useEffect(() => {
