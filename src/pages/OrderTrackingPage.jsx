@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { getOrderDetails, cancelOrder, confirmDelivery } from '../api/orders';
+import { getOrderDetails, cancelOrder, confirmDelivery, advanceStatus } from '../api/orders';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -206,6 +206,16 @@ export default function OrderTrackingPage() {
     const DELIVERY_DURATION = 30000;
     const totalMs = ACCEPTED_DURATION + PREP_DURATION + DELIVERY_DURATION;
 
+    const advKey = `advancing_${order.id}`;
+    let lastAdvStep = (() => { try { return parseInt(localStorage.getItem(advKey)) || 0; } catch (e) { return 0; } })();
+
+    const doAdvance = (targetStep) => {
+      if (targetStep <= lastAdvStep) return;
+      advanceStatus(order.id)
+        .then(() => { lastAdvStep = targetStep; try { localStorage.setItem(advKey, targetStep); } catch (e) {} })
+        .catch(() => {});
+    };
+
     const tick = () => {
       const elapsed = Date.now() - startTime;
       const remaining = Math.max(0, Math.ceil((totalMs - elapsed) / 1000));
@@ -214,11 +224,14 @@ export default function OrderTrackingPage() {
       if (elapsed < ACCEPTED_DURATION) {
         setCurrentStep(1);
         setBikeProgress(0);
+        doAdvance(1);
       } else if (elapsed < ACCEPTED_DURATION + PREP_DURATION) {
         setCurrentStep(2);
         setBikeProgress(0);
+        doAdvance(2);
       } else if (elapsed < totalMs) {
         setCurrentStep(3);
+        doAdvance(3);
         const deliveryProgress = (elapsed - ACCEPTED_DURATION - PREP_DURATION) / DELIVERY_DURATION;
         const clamped = Math.min(deliveryProgress, 1);
         setBikeProgress(clamped);
@@ -226,6 +239,7 @@ export default function OrderTrackingPage() {
       } else {
         setCurrentStep(4);
         setBikeProgress(1);
+        doAdvance(4);
         updateMapPosition(restLat, restLng, userLat, userLng, 1);
       }
 
@@ -234,11 +248,11 @@ export default function OrderTrackingPage() {
       } else {
         try {
           localStorage.removeItem(storageKey);
+          localStorage.removeItem(advKey);
           const delivered = JSON.parse(localStorage.getItem('deliveredOrders') || '[]');
           if (!delivered.includes(order.id)) {
             delivered.push(order.id);
             localStorage.setItem('deliveredOrders', JSON.stringify(delivered));
-            confirmDelivery(order.id).catch(() => {});
           }
         } catch (e) {}
       }

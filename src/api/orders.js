@@ -14,6 +14,8 @@ export const updateOrderStatus = (id, status) =>
   api.patch(`/api/orders/${id}/status?status=${status}`);
 export const confirmDelivery = (id) =>
   api.post(`/api/orders/${id}/confirm-delivery`);
+export const advanceStatus = (id) =>
+  api.post(`/api/orders/${id}/advance-status`);
 
 export const getOwnerOrders = () =>
   api.get('/api/owner/restaurants/orders');
