@@ -75,7 +75,6 @@ export default function OrderTrackingPage() {
     const lat = interpolate(restLat, userLat, progress);
     const lng = interpolate(restLng, userLng, progress);
     bikeMarker.current.setLatLng([lat, lng]);
-    mapInstance.current.setView([lat, lng], 13, { animate: true });
   }, []);
 
   useEffect(() => {
