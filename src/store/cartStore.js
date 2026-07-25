@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { getCart } from '../api/cart';
 
-const useCartStore = create((set) => ({
+const useCartStore = create((set, get) => ({
   count: 0,
   loading: false,
 
@@ -18,6 +18,8 @@ const useCartStore = create((set) => ({
       set({ loading: false });
     }
   },
+
+  incrementCount: (qty = 1) => set((state) => ({ count: state.count + qty })),
 
   setCount: (count) => set({ count }),
 }));

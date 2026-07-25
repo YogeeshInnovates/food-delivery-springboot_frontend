@@ -11,7 +11,7 @@ export default function RestaurantDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { token, getRole } = useAuthStore();
-  const { fetchCount } = useCartStore();
+  const { incrementCount } = useCartStore();
   const [restaurant, setRestaurant] = useState(null);
   const [menu, setMenu] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -43,7 +43,7 @@ export default function RestaurantDetailPage() {
     setAddingId(item.id);
     try {
       await addToCart({ menuItemId: item.id, quantity: 1 });
-      fetchCount();
+      incrementCount();
       toast.success(`${item.name} added to cart! 🛒`);
     } catch (err) {
       toast.error(err.message);

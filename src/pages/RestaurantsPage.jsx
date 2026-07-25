@@ -11,7 +11,7 @@ const PAGE_SIZE = 20;
 
 export default function RestaurantsPage() {
   const { token } = useAuthStore();
-  const { fetchCount } = useCartStore();
+  const { incrementCount } = useCartStore();
   const [restaurants, setRestaurants] = useState([]);
   const [foodItems, setFoodItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -140,7 +140,7 @@ export default function RestaurantsPage() {
     setAddingId(item.id);
     try {
       await addToCart({ menuItemId: item.id, quantity: 1 });
-      fetchCount();
+      incrementCount();
       toast.success(`${item.name} added to cart!`);
     } catch (err) {
       toast.error(err.message || 'Failed to add to cart');

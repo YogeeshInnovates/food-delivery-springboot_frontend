@@ -19,7 +19,7 @@ const categoryEmoji = (cat) => CATEGORY_ICONS[cat] || '🍽️';
 
 export default function HomePage() {
   const { token, getRole } = useAuthStore();
-  const { fetchCount } = useCartStore();
+  const { fetchCount, incrementCount } = useCartStore();
   const role = getRole();
   const navigate = useNavigate();
   const searchRef = useRef(null);
@@ -63,7 +63,7 @@ export default function HomePage() {
     try {
       await addToCart({ menuItemId: item.id, quantity: 1 });
       toast.success(`${item.name} added to cart!`);
-      fetchCount();
+      incrementCount();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to add to cart');
     } finally {
