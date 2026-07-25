@@ -296,7 +296,7 @@ export default function OrderTrackingPage() {
         </div>
 
         {/* ETA Card */}
-        {!isDelivered && eta && order.status !== 'PLACED' && (
+        {!isDelivered && eta && order.status !== 'PLACED' && currentStep >= 2 && (
           <div className="card" style={{
             padding: '1.25rem', marginBottom: '1rem', textAlign: 'center',
             borderRadius: '16px',
@@ -335,8 +335,25 @@ export default function OrderTrackingPage() {
           <span style={{ fontWeight: 900, color: 'var(--primary)', fontSize: '1.15rem' }}>₹{order.totalAmount?.toFixed(2)}</span>
         </div>
 
+        {/* Order Accepted - shows during step 1 only */}
+        {currentStep === 1 && !isDelivered && (
+          <div className="card" style={{
+            padding: '1.5rem', marginBottom: '1rem', borderRadius: '16px', textAlign: 'center',
+            background: 'linear-gradient(135deg, #f0fdf4, #dcfce7)',
+            border: '1.5px solid #86efac',
+          }}>
+            <div style={{ fontSize: '2rem', marginBottom: '0.4rem' }}>👍</div>
+            <div style={{ fontWeight: 700, fontSize: '1.05rem', color: '#166534', marginBottom: '0.25rem' }}>
+              {restName} accepted your order!
+            </div>
+            <div style={{ fontSize: '0.85rem', color: '#15803d', fontWeight: 500 }}>
+              Finding you a delivery partner...
+            </div>
+          </div>
+        )}
+
         {/* Delivery Partner Card */}
-        {partner && !isDelivered && order.status !== 'PLACED' && (
+        {partner && !isDelivered && order.status !== 'PLACED' && currentStep >= 2 && (
           <div className="card" style={{
             padding: '1.25rem 1.5rem', marginBottom: '1rem', borderRadius: '16px',
             background: 'linear-gradient(135deg, #f0f9ff, #e0f2fe)',
