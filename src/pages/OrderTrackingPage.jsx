@@ -220,7 +220,10 @@ export default function OrderTrackingPage() {
         .catch(() => {});
     };
 
+    let cancelled = false;
+
     const tick = () => {
+      if (cancelled) return;
       const elapsed = Date.now() - startTime;
       const remaining = Math.max(0, Math.ceil((totalMs - elapsed) / 1000));
       setEta(`${Math.ceil(remaining / 60)}m`);
@@ -263,7 +266,7 @@ export default function OrderTrackingPage() {
     };
 
     const frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
+    return () => { cancelled = true; cancelAnimationFrame(frame); };
   }, [order, currentStep >= 0]);
 
   if (loading) return <div className="page"><div className="spinner" /></div>;
