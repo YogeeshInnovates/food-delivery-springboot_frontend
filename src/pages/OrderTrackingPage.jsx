@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { getOrderDetails, cancelOrder, confirmDelivery, advanceStatus } from '../api/orders';
+import api from '../api/axiosInstance';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -99,6 +100,13 @@ export default function OrderTrackingPage() {
       .catch((err) => toast.error(err.message))
       .finally(() => setLoading(false));
   }, [id]);
+
+  useEffect(() => {
+    const ping = setInterval(() => {
+      api.get('/api/menu-items/popular').catch(() => {});
+    }, 30000);
+    return () => clearInterval(ping);
+  }, []);
 
   useEffect(() => {
     if (!order || order.status !== 'PLACED') return;
