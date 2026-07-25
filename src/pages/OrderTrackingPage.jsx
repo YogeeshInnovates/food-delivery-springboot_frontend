@@ -241,7 +241,6 @@ export default function OrderTrackingPage() {
         doAdvance(2);
       } else if (elapsed < totalMs) {
         setCurrentStep(3);
-        doAdvance(3);
         const deliveryProgress = (elapsed - ACCEPTED_DURATION - PREP_DURATION) / DELIVERY_DURATION;
         const clamped = Math.min(deliveryProgress, 1);
         setBikeProgress(clamped);
