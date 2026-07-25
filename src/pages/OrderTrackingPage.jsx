@@ -89,12 +89,6 @@ export default function OrderTrackingPage() {
         const idx = STATUSES.findIndex((s) => s.key === r.data.status);
         setCurrentStep(idx >= 0 ? idx : -1);
 
-        // save tracking key immediately so My Orders can pick it up
-        const trackingKey = `tracking_${id}`;
-        if (!localStorage.getItem(trackingKey)) {
-          try { localStorage.setItem(trackingKey, Date.now()); } catch (e) {}
-        }
-
         const partnerKey = `partner_${id}`;
         let selected = (() => { try { return JSON.parse(localStorage.getItem(partnerKey)); } catch (e) { return null; } })();
         if (!selected) {
@@ -189,22 +183,28 @@ export default function OrderTrackingPage() {
     const speedKmh = 25;
     const etaMin = Math.max(2, Math.ceil((distance / speedKmh) * 60));
     const cappedEta = Math.min(etaMin, 2);
-    setEta(`${cappedEta} min`);
 
-    const ACCEPTED_DURATION = 2000;
-    const PREP_DURATION = 30000;
-    const totalMs = Math.max(ACCEPTED_DURATION + PREP_DURATION + 5000, cappedEta * 60 * 1000);
-    const deliveryWindow = totalMs - ACCEPTED_DURATION - PREP_DURATION;
+    if (order.status === 'PLACED') {
+      setCurrentStep(0);
+      setBikeProgress(0);
+      setEta('Waiting...');
+      return;
+    }
 
     const storageKey = `tracking_${order.id}`;
     let startTime = (() => {
       try { return parseInt(localStorage.getItem(storageKey)); } catch (e) { return null; }
     })();
     const now = Date.now();
-    if (!startTime || (now - startTime) > totalMs) {
+    if (!startTime) {
       startTime = now;
       try { localStorage.setItem(storageKey, startTime); } catch (e) {}
     }
+
+    const ACCEPTED_DURATION = 30000;
+    const PREP_DURATION = 30000;
+    const DELIVERY_DURATION = 30000;
+    const totalMs = ACCEPTED_DURATION + PREP_DURATION + DELIVERY_DURATION;
 
     const tick = () => {
       const elapsed = Date.now() - startTime;
@@ -219,7 +219,7 @@ export default function OrderTrackingPage() {
         setBikeProgress(0);
       } else if (elapsed < totalMs) {
         setCurrentStep(3);
-        const deliveryProgress = (elapsed - ACCEPTED_DURATION - PREP_DURATION) / deliveryWindow;
+        const deliveryProgress = (elapsed - ACCEPTED_DURATION - PREP_DURATION) / DELIVERY_DURATION;
         const clamped = Math.min(deliveryProgress, 1);
         setBikeProgress(clamped);
         updateMapPosition(restLat, restLng, userLat, userLng, clamped);
@@ -352,11 +352,13 @@ export default function OrderTrackingPage() {
                   background: currentStep === 2 ? '#fef3c7' : '#e0f2fe',
                   display: 'inline-block', padding: '0.2rem 0.75rem', borderRadius: '20px',
                 }}>
-                  {currentStep === 2
-                    ? `🔄 Heading to ${restName} to pick up your order`
-                    : currentStep === 3
-                      ? '🛵 Your food is on the way!'
-                      : '📍 Getting your order ready'}
+                  {currentStep === 1
+                    ? '🚶 Heading to restaurant to pick up'
+                    : currentStep === 2
+                      ? `🔄 ${restName} is preparing your order`
+                      : currentStep === 3
+                        ? '🛵 Your food is on the way!'
+                        : '📍 Getting your order ready'}
                 </div>
               </div>
             </div>
@@ -364,7 +366,7 @@ export default function OrderTrackingPage() {
         )}
 
         {/* Cancel section (visible during PLACED / PREPARING) */}
-        {currentStep >= 1 && currentStep < 3 && (
+        {(order.status === 'PLACED' || (currentStep >= 1 && currentStep < 3)) && (
           <div className="card" style={{
             padding: '1.25rem', marginBottom: '1rem', borderRadius: '16px', textAlign: 'center',
             background: 'linear-gradient(135deg, #fef3c7, #ffedd5)',
