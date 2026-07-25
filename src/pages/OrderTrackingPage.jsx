@@ -75,7 +75,8 @@ export default function OrderTrackingPage() {
     const lat = interpolate(restLat, userLat, progress);
     const lng = interpolate(restLng, userLng, progress);
     bikeMarker.current.setLatLng([lat, lng]);
-    mapInstance.current.setView([lat, lng], 13, { animate: true });
+    const bounds = L.latLngBounds([restLat, restLng], [userLat, userLng]).extend([lat, lng]);
+    mapInstance.current.fitBounds(bounds, { padding: [60, 60], maxZoom: 14, animate: true });
   }, []);
 
   useEffect(() => {
@@ -125,7 +126,7 @@ export default function OrderTrackingPage() {
     const userLng = order.deliveryLongitude || 77.6245;
 
     if (!mapInstance.current) {
-      mapInstance.current = L.map(mapRef.current, { zoomControl: true }).setView([restLat, restLng], 13);
+      mapInstance.current = L.map(mapRef.current, { zoomControl: true }).setView([restLat, restLng], 12);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap',
         maxZoom: 19,
