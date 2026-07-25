@@ -379,6 +379,59 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Popular Food Items */}
+      {popularItems.length > 0 && (
+        <section style={{ padding: '2rem 0 2rem', background: '#fff' }}>
+          <div className="container" style={{ maxWidth: '1000px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.75rem' }}>
+              <div>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 800, margin: 0, color: '#0f172a' }}>Popular Food Items</h2>
+                <p style={{ margin: '0.1rem 0 0', color: '#94a3b8', fontSize: '0.88rem', fontWeight: 500 }}>Top picks from our restaurants</p>
+              </div>
+            </div>
+            <div className="grid grid-3" style={{ gap: '1.25rem' }}>
+              {popularItems.map((item) => (
+                <div key={item.id} onClick={() => navigate(`/restaurants/${item.restaurantId}`)} style={{
+                  borderRadius: '16px', overflow: 'hidden', boxShadow: '0 4px 16px rgba(0,0,0,0.04)',
+                  transition: 'transform 0.2s, box-shadow 0.2s', cursor: 'pointer', background: '#fff',
+                  border: '1px solid #f1f5f9',
+                }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.08)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.04)'; }}
+                >
+                  <div style={{ height: '160px', overflow: 'hidden', background: 'linear-gradient(135deg, #fef3c7, #fce7f3)' }}>
+                    {item.imageUrl ? (
+                      <img src={item.imageUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3.5rem' }}>
+                        {categoryEmoji(item.category)}
+                      </div>
+                    )}
+                  </div>
+                  <div style={{ padding: '1rem 1.15rem 1.15rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.25rem' }}>
+                      <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#0f172a' }}>{item.name}</h3>
+                      <span style={{ fontWeight: 900, fontSize: '1rem', color: 'var(--primary)', whiteSpace: 'nowrap', marginLeft: '0.5rem' }}>₹{item.price?.toFixed(0)}</span>
+                    </div>
+                    <div style={{ fontSize: '0.82rem', color: '#94a3b8', fontWeight: 600, marginBottom: '0.75rem' }}>
+                      {item.restaurantName}
+                    </div>
+                    <div style={{ borderTop: '1.5px solid #f1f5f9', paddingTop: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#94a3b8' }}>
+                        {categoryEmoji(item.category)} {item.category?.replace('_', ' ') || 'Food'}
+                      </span>
+                      <button className="btn btn-primary btn-sm" onClick={(e) => { e.stopPropagation(); navigate(`/restaurants/${item.restaurantId}`); }} style={{ borderRadius: '20px', fontSize: '0.78rem', padding: '0.35rem 1rem' }}>
+                        Order Now
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* How It Works */}
       <section style={{ padding: '3.5rem 0', background: '#fff' }}>
         <div className="container" style={{ maxWidth: '900px', textAlign: 'center' }}>
