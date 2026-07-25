@@ -3,7 +3,6 @@ import { Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
-import api from './api/axiosInstance';
 
 // Pages
 import HomePage from './pages/HomePage';
@@ -27,10 +26,11 @@ import { AdminLayout, AdminDashboard, AdminUsersPage, AdminRestaurantsPage, Admi
 
 export default function App() {
   useEffect(() => {
-    const ping = setInterval(() => {
-      api.get('/api/menu-items/popular').catch(() => {});
-    }, 30000);
-    return () => clearInterval(ping);
+    const BASE = import.meta.env.VITE_API_URL || '';
+    const ping = () => fetch(`${BASE}/api/menu-items/popular`).catch(() => {});
+    ping();
+    const interval = setInterval(ping, 25000);
+    return () => clearInterval(interval);
   }, []);
 
   return (

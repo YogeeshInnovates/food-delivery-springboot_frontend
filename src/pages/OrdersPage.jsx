@@ -20,18 +20,29 @@ export default function OrdersPage() {
   const [trackingIds, setTrackingIds] = useState(new Set());
   const navigate = useNavigate();
 
-  useEffect(() => {
+  const loadOrders = (retries = 3) => {
+    setLoading(true);
     Promise.all([
       getMyOrders(0, 20).then((r) => setOrders(r.data.content || r.data)),
       getMyTotalSpend().then((r) => setTotalSpend(r.data)),
-    ]).catch((err) => toast.error(err.message)).finally(() => setLoading(false));
-  }, []);
+    ])
+      .catch((err) => {
+        if (retries > 0) {
+          setTimeout(() => loadOrders(retries - 1), 2000);
+        } else {
+          toast.error(err.message);
+        }
+      })
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => { loadOrders(); }, []);
 
   useEffect(() => {
     if (!orders.length) return;
     const delivered = (() => { try { return JSON.parse(localStorage.getItem('deliveredOrders') || '[]'); } catch (e) { return []; } })();
     const activeStatuses = ['PLACED', 'ACCEPTED', 'PREPARING', 'OUT_FOR_DELIVERY'];
-    const MAX_TRACKING_AGE = 180000;
+    const MAX_TRACKING_AGE = 600000;
     const ids = new Set();
     let latestId = -1;
     const now = Date.now();
