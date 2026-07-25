@@ -304,7 +304,11 @@ export function AdminOrdersPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getAdminOrders(0, 50).then((r) => setOrders(r.data.content || r.data)).catch((err) => toast.error(err.message)).finally(() => setLoading(false));
+    getAdminOrders(0, 50).then((r) => {
+      const list = r.data.content || r.data;
+      list.sort((a, b) => new Date(b.placedAt) - new Date(a.placedAt));
+      setOrders(list);
+    }).catch((err) => toast.error(err.message)).finally(() => setLoading(false));
   }, []);
 
   if (loading) return <div className="spinner" />;

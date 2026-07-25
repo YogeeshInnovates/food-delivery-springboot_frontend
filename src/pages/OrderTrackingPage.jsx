@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { getOrderDetails, cancelOrder } from '../api/orders';
+import { getOrderDetails, cancelOrder, confirmDelivery } from '../api/orders';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -238,6 +238,7 @@ export default function OrderTrackingPage() {
           if (!delivered.includes(order.id)) {
             delivered.push(order.id);
             localStorage.setItem('deliveredOrders', JSON.stringify(delivered));
+            confirmDelivery(order.id).catch(() => {});
           }
         } catch (e) {}
       }
