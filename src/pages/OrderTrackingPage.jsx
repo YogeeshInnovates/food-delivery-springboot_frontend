@@ -207,7 +207,7 @@ export default function OrderTrackingPage() {
 
     const ACCEPTED_DURATION = 30000;
     const PREP_DURATION = 45000;
-    const DELIVERY_DURATION = 60000;
+    const DELIVERY_DURATION = 90000;
     const totalMs = ACCEPTED_DURATION + PREP_DURATION + DELIVERY_DURATION;
 
     const advKey = `advancing_${order.id}`;
