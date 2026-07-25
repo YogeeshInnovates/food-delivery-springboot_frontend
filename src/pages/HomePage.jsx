@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import useAuthStore from '../store/authStore';
 import { listRestaurants } from '../api/restaurants';
 import { getPopularItems } from '../api/menu';
+import { addToCart } from '../api/cart';
 
 const CATEGORY_ICONS = {
   PIZZA: '🍕', BURGER: '🍔', BIRIYANI: '🍚', RICE: '🍚',
@@ -26,6 +27,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [showSearch, setShowSearch] = useState(false);
+  const [addingId, setAddingId] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,6 +54,19 @@ export default function HomePage() {
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
+
+  const handleAddToCart = async (item) => {
+    if (!token) { navigate('/login'); return; }
+    setAddingId(item.id);
+    try {
+      await addToCart({ menuItemId: item.id, quantity: 1 });
+      toast.success(`${item.name} added to cart!`);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to add to cart');
+    } finally {
+      setAddingId(null);
+    }
+  };
 
   const searchResults = (() => {
     if (!search.trim()) return { restaurants: [], items: [] };
@@ -420,8 +435,8 @@ export default function HomePage() {
                       <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#94a3b8' }}>
                         {categoryEmoji(item.category)} {item.category?.replace('_', ' ') || 'Food'}
                       </span>
-                      <button className="btn btn-primary btn-sm" onClick={(e) => { e.stopPropagation(); navigate(`/restaurants/${item.restaurantId}`); }} style={{ borderRadius: '20px', fontSize: '0.78rem', padding: '0.35rem 1rem' }}>
-                        Order Now
+                      <button className="btn btn-primary btn-sm" onClick={(e) => { e.stopPropagation(); handleAddToCart(item); }} disabled={addingId === item.id} style={{ borderRadius: '20px', fontSize: '0.78rem', padding: '0.35rem 1rem' }}>
+                        {addingId === item.id ? 'Adding...' : 'Add to Cart'}
                       </button>
                     </div>
                   </div>
