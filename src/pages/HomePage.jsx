@@ -5,6 +5,7 @@ import useAuthStore from '../store/authStore';
 import { listRestaurants } from '../api/restaurants';
 import { getPopularItems } from '../api/menu';
 import { addToCart } from '../api/cart';
+import useCartStore from '../store/cartStore';
 
 const CATEGORY_ICONS = {
   PIZZA: '🍕', BURGER: '🍔', BIRIYANI: '🍚', RICE: '🍚',
@@ -18,6 +19,7 @@ const categoryEmoji = (cat) => CATEGORY_ICONS[cat] || '🍽️';
 
 export default function HomePage() {
   const { token, getRole } = useAuthStore();
+  const { fetchCount } = useCartStore();
   const role = getRole();
   const navigate = useNavigate();
   const searchRef = useRef(null);
@@ -61,6 +63,7 @@ export default function HomePage() {
     try {
       await addToCart({ menuItemId: item.id, quantity: 1 });
       toast.success(`${item.name} added to cart!`);
+      fetchCount();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to add to cart');
     } finally {
