@@ -206,18 +206,21 @@ export default function OrderTrackingPage() {
     }
 
     const ACCEPTED_DURATION = 30000;
-    const PREP_DURATION = 30000;
-    const DELIVERY_DURATION = 30000;
+    const PREP_DURATION = 45000;
+    const DELIVERY_DURATION = 60000;
     const totalMs = ACCEPTED_DURATION + PREP_DURATION + DELIVERY_DURATION;
 
     const advKey = `advancing_${order.id}`;
     let lastAdvStep = (() => { try { return parseInt(localStorage.getItem(advKey)) || 0; } catch (e) { return 0; } })();
+    let advancing = false;
 
     const doAdvance = (targetStep) => {
-      if (targetStep <= lastAdvStep) return;
+      if (targetStep <= lastAdvStep || advancing) return;
+      advancing = true;
       advanceStatus(order.id)
         .then(() => { lastAdvStep = targetStep; try { localStorage.setItem(advKey, targetStep); } catch (e) {} })
-        .catch(() => {});
+        .catch(() => {})
+        .finally(() => { advancing = false; });
     };
 
     let cancelled = false;
