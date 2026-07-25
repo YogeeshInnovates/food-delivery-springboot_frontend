@@ -1,7 +1,9 @@
+import { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
+import api from './api/axiosInstance';
 
 // Pages
 import HomePage from './pages/HomePage';
@@ -24,6 +26,13 @@ import AdminLoginPage from './pages/AdminLoginPage';
 import { AdminLayout, AdminDashboard, AdminUsersPage, AdminRestaurantsPage, AdminOrdersPage, AdminCreateAdminPage } from './pages/AdminPages';
 
 export default function App() {
+  useEffect(() => {
+    const ping = setInterval(() => {
+      api.get('/api/menu-items/popular').catch(() => {});
+    }, 30000);
+    return () => clearInterval(ping);
+  }, []);
+
   return (
     <>
       <Toaster
