@@ -281,7 +281,7 @@ export default function OrderTrackingPage() {
         </div>
 
         {/* ETA Card */}
-        {!isDelivered && eta && (
+        {!isDelivered && eta && order.status !== 'PLACED' && (
           <div className="card" style={{
             padding: '1.25rem', marginBottom: '1rem', textAlign: 'center',
             borderRadius: '16px',
@@ -321,7 +321,7 @@ export default function OrderTrackingPage() {
         </div>
 
         {/* Delivery Partner Card */}
-        {partner && !isDelivered && (
+        {partner && !isDelivered && order.status !== 'PLACED' && (
           <div className="card" style={{
             padding: '1.25rem 1.5rem', marginBottom: '1rem', borderRadius: '16px',
             background: 'linear-gradient(135deg, #f0f9ff, #e0f2fe)',
