@@ -11,7 +11,7 @@ export default function RestaurantDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { token, getRole } = useAuthStore();
-  const { incrementCount } = useCartStore();
+  const { incrementCount, cartRestaurantId, setCartRestaurantId } = useCartStore();
   const [restaurant, setRestaurant] = useState(null);
   const [menu, setMenu] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,6 +20,7 @@ export default function RestaurantDetailPage() {
 
   useEffect(() => {
     load();
+    useCartStore.getState().fetchCount();
   }, [id]);
 
   const load = async () => {
@@ -40,10 +41,15 @@ export default function RestaurantDetailPage() {
   const handleAddToCart = async (item) => {
     if (!token) { toast.error('Please login to add items to cart'); navigate('/login'); return; }
     if (getRole() !== 'CUSTOMER') { toast.error('Only customers can add to cart'); return; }
+    if (cartRestaurantId && cartRestaurantId !== item.restaurantId) {
+      toast.error(`You've selected items from ${restaurant?.name || 'another restaurant'}. A single order can only contain items from one restaurant. Please clear your cart or remove the other items first.`);
+      return;
+    }
     setAddingId(item.id);
     try {
       await addToCart({ menuItemId: item.id, quantity: 1 });
       incrementCount();
+      setCartRestaurantId(item.restaurantId);
       toast.success(`${item.name} added to cart! 🛒`);
     } catch (err) {
       toast.error(err.message);

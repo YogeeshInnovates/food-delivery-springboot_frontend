@@ -138,6 +138,11 @@ export default function CartPage() {
                   }}
                 >
                   <div className="cart-item-details">
+                    {item.restaurantName && (
+                      <div style={{ fontSize: '0.72rem', color: 'var(--primary)', fontWeight: 700, marginBottom: '0.15rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                        🏪 {item.restaurantName}
+                      </div>
+                    )}
                     <div style={{ fontWeight: 800, fontSize: '1.05rem', color: '#0f172a' }}>{item.name}</div>
                     <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.15rem', fontWeight: 600 }}>
                       ₹{item.price?.toFixed(2)} each
